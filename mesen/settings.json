@@ -9746,6 +9746,14 @@
     "Items": [
       {
         "RomFile": {
+          "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/game.nes",
+          "InnerFile": "",
+          "InnerFileIndex": 0
+        },
+        "PatchFile": null
+      },
+      {
+        "RomFile": {
           "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/startup.nes",
           "InnerFile": "",
           "InnerFileIndex": 0
@@ -9755,14 +9763,6 @@
       {
         "RomFile": {
           "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects/src/game.nes",
-          "InnerFile": "",
-          "InnerFileIndex": 0
-        },
-        "PatchFile": null
-      },
-      {
-        "RomFile": {
-          "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/game.nes",
           "InnerFile": "",
           "InnerFileIndex": 0
         },

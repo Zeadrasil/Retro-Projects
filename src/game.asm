@@ -5,6 +5,7 @@ SPRITE_0_ADDR = oam + 0
 SPRITE_1_ADDR = oam + 4
 SPRITE_2_ADDR = oam + 8
 SPRITE_3_ADDR = oam + 12
+SPRITE_BALL_ADDR = oam + 16
 
 ;*****************************************************************
 ; Define NES cartridge Header
@@ -59,6 +60,10 @@ player_x:               .res 1    ; Player X position
 player_y:               .res 1    ; Player Y position
 player_vel_x:           .res 1    ; Player X velocity
 player_vel_y:           .res 1    ; Player Y velocity
+ball_x:                 .res 1    ; Ball X position
+ball_y:                 .res 1    ; Ball Y position
+ball_dx:                .res 1    ; Ball X velocity
+ball_dy:                .res 1    ; Ball Y velocity
 score:                  .res 1    ; Score low byte
 scroll:                 .res 1    ; Scroll screen
 time:                   .res 1    ; Time (60hz = 60 FPS)
@@ -91,7 +96,28 @@ oam: .res 256	; sprite OAM data
 
 ; Non-Maskable Interrupt Handler - called during VBlank
 .proc nmi_handler
+  ;Save Registers
+  PHA
+  TXA
+  PHA
+  TYA
+  PHA
 
+  INC time ;increment time by 1
+  LDA time;load time into accumulator
+  CMP #60;accumulator == 60
+  BNE not_second_interval; if(previous line)
+  INC seconds;increase seconds
+  LDA #0;load 0 into accumulator
+  STA time;reset time counter
+  not_second_interval:;else
+  ;Restore Register
+
+  PLA
+  TAY
+  PLA
+  TAX
+  PLA
   RTI                     ; Return from interrupt (not using NMI yet)
 .endproc
 
@@ -171,14 +197,13 @@ remaining_loop:
     BNE remaining_loop
 
  	; draw some text on the screen
-text_loop:
-  LDA hello_txt, x
-  STA PPU_VRAM_IO
-  INX
-  CMP #0
-  BEQ :+
-  JMP text_loop
-  :
+  LDX #0            ; set index X to 0
+textloop:
+  LDA hello_txt, X  ; load character into A from memory (hello_text + X)
+  STA PPU_VRAM_IO   ; set character into PPU
+  INX               ; increment index X
+  CMP #0            ; check A for 0 (null terminator)
+  BNE textloop
 
  	LDA PPU_STATUS ; reset address latch
  	LDA #$20 ; set PPU address to $208A (Row = 4, Column = 10)
@@ -198,6 +223,14 @@ text_loop:
 .endproc
 
 .proc init_sprites
+
+LDX#0
+load_sprite:
+;LDA sprite_data, X
+;STA SPRITE_PLAYER0_ADDR, X
+INX
+CPX#4
+
   ; set sprite tiles
   LDA #1
   STA SPRITE_0_ADDR + SPRITE_OFFSET_TILE
@@ -215,7 +248,53 @@ text_loop:
   STA player_x
 
   RTS
+
+;LDA #128
+;STA ball_x
+;LDA #100
+;STA ball_y
+
+;LDA #1
+;STA ball_dx
+;LDA #1
+;STA ball_dy
+
 .endproc
+
+.proc update_ball
+; now move our ball
+ 	lda ball_y; get the current Y
+	clc
+	adc ball_dy ; add the Y velocity
+ 	sta ball_y; write the change
+ 	cmp #0 ; have we hit the top border
+ 	bne NOT_HITTOP
+ 		lda #1 ; reverse direction
+ 		sta ball_dy
+ NOT_HITTOP:
+ 	lda ball_y
+ 	cmp #210 ; have we hit the bottom border
+ 	bne NOT_HITBOTTOM
+ 		lda #$FF ; reverse direction (-1)
+ 		sta ball_dy
+ NOT_HITBOTTOM:
+ 	lda ball_x; get the current x
+ 	clc
+ 	adc ball_dx	; add the X velocity
+ 	sta ball_x
+ 	cmp #0 ; have we hit the left border
+ 	bne NOT_HITLEFT
+ 		lda #1 ; reverse direction
+ 		sta ball_dx
+ NOT_HITLEFT:
+ 	lda ball_x
+ 	cmp #248 ; have we hit the right border
+ 	bne NOT_HITRIGHT
+ 		lda #$FF ; reverse direction (-1)
+ 		sta ball_dx
+ NOT_HITRIGHT:
+ RTS
+ .endproc
 
 ;******************************************************************************
 ; Procedure: update_sprites
@@ -246,10 +325,18 @@ text_loop:
   STA SPRITE_2_ADDR + SPRITE_OFFSET_Y
   STA SPRITE_3_ADDR + SPRITE_OFFSET_Y
 
+; BALL SPRITE POSITIONING
+LDA ball_y
+STA SPRITE_BALL_ADDR + SPRITE_OFFSET_Y
+
+LDA ball_x
+STA SPRITE_BALL_ADDR + SPRITE_OFFSET_X
+
+
   LDA #$00
   INC scroll
   LDA scroll
-  STA PPU_SCROLL                         ; Write horizontal scroll
+  ;STA PPU_SCROLL                         ; Write horizontal scroll
   ;STA PPU_SCROLL                         ; Write vertical scroll
 
   ; Set OAM address to 0 — required before DMA or manual OAM writes
@@ -338,7 +425,7 @@ forever:
     ; Read controller
     JSR read_controller
     JSR update_player
-
+    JSR update_ball
     ; Update sprite data (DMA transfer to PPU OAM)
     JSR update_sprites
 
@@ -440,6 +527,12 @@ palette_data:
 ; Load nametable data
 nametable_data:
   .incbin "assets/screen.nam"
+
+sprite_data:
+.byte 30, 1, 0, 40
+.byte 30, 2, 0, 48
+.byte 38, 3, 0 ,40
+.byte 38, 4, 0, 48
 
 hello_txt:
 .byte 'H','E','L','L', 'O', ' ', 'W', 'O', 'R', 'L', 'D', 0
