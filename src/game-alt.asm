@@ -1,14 +1,10 @@
 .include "nes.inc"
 .include "macros.inc"
 
-SPRITE_0_ADDR = oam + 0
-SPRITE_1_ADDR = oam + 4
-SPRITE_2_ADDR = oam + 8
-SPRITE_3_ADDR = oam + 12
 SPRITE_BALL_ADDR = oam + 16
 SPRITE_BALLA_ADDR = oam + 20
 SPRITE_BALLB_ADDR = oam + 24
-SPRITE_BALLC_ADDR = oam + 32
+SPRITE_BALLC_ADDR = oam + 28
 
 ;*****************************************************************
 ; Define NES cartridge Header
@@ -65,20 +61,21 @@ player_vel_x:           .res 1    ; Player X velocity
 player_vel_y:           .res 1    ; Player Y velocity
 ball_x:                 .res 1    ; Ball X position
 ball_y:                 .res 1    ; Ball Y position
-balla_x:                 .res 1    ; Ball X position
-balla_y:                 .res 1    ; Ball Y position
-ballb_x:                 .res 1    ; Ball X position
-ballb_y:                 .res 1    ; Ball Y position
-ballc_x:                 .res 1    ; Ball X position
-ballc_y:                 .res 1    ; Ball Y position
 ball_dx:                .res 1    ; Ball X velocity
 ball_dy:                .res 1    ; Ball Y velocity
-balla_dx:                .res 1    ; Ball X velocity
-balla_dy:                .res 1    ; Ball Y velocity
-ballb_dx:                .res 1    ; Ball X velocity
-ballb_dy:                .res 1    ; Ball Y velocity
-ballc_dx:                .res 1    ; Ball X velocity
-ballc_dy:                .res 1    ; Ball Y velocity
+balla_x:                .res 1    ; Ball X position
+balla_y:                .res 1    ; Ball Y position
+balla_dx:               .res 1    ; Ball X velocity
+balla_dy:               .res 1    ; Ball Y velocity
+ballb_x:                .res 1    ; Ball X position
+ballb_y:                .res 1    ; Ball Y position
+ballb_dx:               .res 1    ; Ball X velocity
+ballb_dy:               .res 1    ; Ball Y velocity
+ballc_x:                .res 1    ; Ball X position
+ballc_y:                .res 1    ; Ball Y position
+ballc_dx:               .res 1    ; Ball X velocity
+ballc_dy:               .res 1    ; Ball Y velocity
+collision_flags:        .res 1
 score:                  .res 1    ; Score low byte
 scroll:                 .res 1    ; Scroll screen
 time:                   .res 1    ; Time (60hz = 60 FPS)
@@ -237,6 +234,488 @@ textloop:
 
 .endproc
 
+.proc run_collision
+;Reset collision flags
+LDA #0
+STA collision_flags
+;Identify horizontal direction between objects
+CLC
+LDA ball_x
+CMP balla_x
+BCC ball_x_less_balla_x
+;Check if x is within collision range
+CLC
+SBC balla_x
+CLC
+CMP #9
+BCS ball_ballb_check
+JMP ball_balla_y_check
+;Check if x is within collision range
+ball_x_less_balla_x:
+CLC
+LDA balla_x
+SBC ball_x
+CLC
+CMP #9
+BCS ball_ballb_check
+;Identify vertical direction between objects
+ball_balla_y_check:
+CLC
+LDA ball_y
+CMP balla_y
+BCC ball_y_less_balla_y
+;Check if y is within collision range
+CLC
+SBC balla_y
+CLC
+CMP #9
+BCS ball_ballb_check
+JMP ball_balla_collision_setup
+;check if y is within collision range
+ball_y_less_balla_y:
+CLC
+LDA balla_y
+SBC ball_y
+CLC
+CMP #9
+BCS ball_ballb_check
+;Check which velocities need to be swapped
+ball_balla_collision_setup:
+CLC
+LDA ball_dx
+CMP balla_dx
+BEQ ball_balla_equal_dx
+LDA collision_flags
+ORA #%10100000
+STA collision_flags
+ball_balla_equal_dx:
+LDA ball_dy
+CMP balla_dy
+BEQ ball_ballb_check
+LDA collision_flags
+ORA #%01010000
+STA collision_flags
+
+ball_ballb_check:
+;Identify horizontal direction between objects
+CLC
+LDA ball_x
+CMP ballb_x
+BCC ball_x_less_ballb_x
+;Check if x is within collision range
+CLC
+SBC ballb_x
+CLC
+CMP #9
+BCS ball_ballc_check
+JMP ball_ballb_y_check
+;Check if x is within collision range
+ball_x_less_ballb_x:
+CLC
+LDA ballb_x
+SBC ball_x
+CLC
+CMP #9
+BCS ball_ballc_check
+;Identify vertical direction between objects
+ball_ballb_y_check:
+CLC
+LDA ball_y
+CMP ballb_y
+BCC ball_y_less_ballb_y
+;Check if y is within collision range
+CLC
+SBC ballb_y
+CLC
+CMP #9
+BCS ball_ballc_check
+JMP ball_ballb_collision_setup
+;check if y is within collision range
+ball_y_less_ballb_y:
+CLC
+LDA ballb_y
+SBC ball_y
+CLC
+CMP #9
+BCS ball_ballc_check
+;Check which velocities need to be swapped
+ball_ballb_collision_setup:
+CLC
+LDA ball_dx
+CMP ballb_dx
+BEQ ball_ballb_equal_dx
+LDA collision_flags
+ORA #%10001000
+STA collision_flags
+ball_ballb_equal_dx:
+LDA ball_dy
+CMP ballb_dy
+BEQ ball_ballc_check
+LDA collision_flags
+ORA #%01000100
+STA collision_flags
+
+ball_ballc_check:
+;Identify horizontal direction between objects
+CLC
+LDA ball_x
+CMP ballc_x
+BCC ball_x_less_ballc_x
+;Check if x is within collision range
+CLC
+SBC ballc_x
+CLC
+CMP #9
+BCS balla_ballb_check
+JMP ball_ballc_y_check
+;Check if x is within collision range
+ball_x_less_ballc_x:
+CLC
+LDA ballc_x
+SBC ball_x
+CLC
+CMP #9
+BCS balla_ballb_check
+;Identify vertical direction between objects
+ball_ballc_y_check:
+CLC
+LDA ball_y
+CMP ballc_y
+BCC ball_y_less_ballc_y
+;Check if y is within collision range
+CLC
+SBC ballc_y
+CLC
+CMP #9
+BCS balla_ballb_check
+JMP ball_ballc_collision_setup
+;check if y is within collision range
+ball_y_less_ballc_y:
+CLC
+LDA ballc_y
+SBC ball_y
+CLC
+CMP #9
+BCS balla_ballb_check
+;Check which velocities need to be swapped
+ball_ballc_collision_setup:
+CLC
+LDA ball_dx
+CMP ballc_dx
+BEQ ball_ballc_equal_dx
+LDA collision_flags
+ORA #%10000010
+STA collision_flags
+ball_ballc_equal_dx:
+LDA ball_dy
+CMP ballc_dy
+BEQ balla_ballb_check
+LDA collision_flags
+ORA #%01000001
+STA collision_flags
+
+balla_ballb_check:
+;Identify horizontal direction between objects
+CLC
+LDA balla_x
+CMP ballb_x
+BCC balla_x_less_ballb_x
+;Check if x is within collision range
+CLC
+SBC ballb_x
+CLC
+CMP #9
+BCS balla_ballc_check
+JMP balla_ballb_y_check
+;Check if x is within collision range
+balla_x_less_ballb_x:
+CLC
+LDA ballb_x
+SBC balla_x
+CLC
+CMP #9
+BCS balla_ballc_check
+;Identify vertical direction between objects
+balla_ballb_y_check:
+CLC
+LDA balla_y
+CMP ballb_y
+BCC balla_y_less_ballb_y
+;Check if y is within collision range
+CLC
+SBC ballb_y
+CLC
+CMP #9
+BCS balla_ballc_check
+JMP balla_ballb_collision_setup
+;check if y is within collision range
+balla_y_less_ballb_y:
+CLC
+LDA ballb_y
+SBC balla_y
+CLC
+CMP #9
+BCS balla_ballc_check
+;Check which velocities need to be swapped
+balla_ballb_collision_setup:
+CLC
+LDA balla_dx
+CMP ballb_dx
+BEQ balla_ballb_equal_dx
+LDA collision_flags
+ORA #%00101000
+STA collision_flags
+balla_ballb_equal_dx:
+LDA balla_dy
+CMP ballb_dy
+BEQ balla_ballc_check
+LDA collision_flags
+ORA #%00010100
+STA collision_flags
+
+
+balla_ballc_check:
+;Identify horizontal direction between objects
+CLC
+LDA balla_x
+CMP ballc_x
+BCC balla_x_less_ballc_x
+;Check if x is within collision range
+CLC
+SBC ballc_x
+CLC
+CMP #9
+BCS ballb_ballc_check
+JMP balla_ballc_y_check
+;Check if x is within collision range
+balla_x_less_ballc_x:
+CLC
+LDA ballc_x
+SBC balla_x
+CLC
+CMP #9
+BCS ballb_ballc_check
+;Identify vertical direction between objects
+balla_ballc_y_check:
+CLC
+LDA balla_y
+CMP ballc_y
+BCC balla_y_less_ballc_y
+;Check if y is within collision range
+CLC
+SBC ballc_y
+CLC
+CMP #9
+BCS ballb_ballc_check
+JMP balla_ballc_collision_setup
+;check if y is within collision range
+balla_y_less_ballc_y:
+CLC
+LDA ballc_y
+SBC balla_y
+CLC
+CMP #9
+BCS ballb_ballc_check
+;Check which velocities need to be swapped
+balla_ballc_collision_setup:
+CLC
+LDA balla_dx
+CMP ballc_dx
+BEQ balla_ballc_equal_dx
+LDA collision_flags
+ORA #%00100010
+STA collision_flags
+balla_ballc_equal_dx:
+LDA balla_dy
+CMP ballc_dy
+BEQ ballb_ballc_check
+LDA collision_flags
+ORA #%00010001
+STA collision_flags
+
+ballb_ballc_check:
+;Identify horizontal direction between objects
+CLC
+LDA ballb_x
+CMP ballc_x
+BCC finish_collision
+;Check if x is within collision range
+CLC
+SBC ballc_x
+CLC
+CMP #9
+BCS finish_collision
+JMP ballb_ballc_y_check
+;Check if x is within collision range
+ballb_x_less_ballc_x:
+CLC
+LDA ballc_x
+SBC ballb_x
+CLC
+CMP #9
+BCS finish_collision
+;Identify vertical direction between objects
+ballb_ballc_y_check:
+CLC
+LDA ballb_y
+CMP ballc_y
+BCC ballb_y_less_ballc_y
+;Check if y is within collision range
+CLC
+SBC ballc_y
+CLC
+CMP #9
+BCS finish_collision
+JMP ballb_ballc_collision_setup
+;check if y is within collision range
+ballb_y_less_ballc_y:
+CLC
+LDA ballc_y
+SBC ballb_y
+CLC
+CMP #9
+BCS finish_collision
+;Check which velocities need to be swapped
+ballb_ballc_collision_setup:
+CLC
+LDA ballb_dx
+CMP ballc_dx
+BEQ ballb_ballc_equal_dx
+LDA collision_flags
+ORA #%00001010
+STA collision_flags
+ballb_ballc_equal_dx:
+LDA ballb_dy
+CMP ballc_dy
+BEQ finish_collision
+LDA collision_flags
+ORA #%00000101
+STA collision_flags
+
+finish_collision:
+LDA collision_flags
+AND #%10000000
+CMP #0
+BEQ ball_y_swap_check
+LDA ball_dx
+CMP #1
+BEQ ball_dx_positive
+LDA #1
+STA ball_dx
+JMP ball_y_swap_check
+ball_dx_positive:
+LDA #$FF
+STA ball_dx
+
+ball_y_swap_check:
+LDA collision_flags
+AND #%01000000
+CMP #0
+BEQ balla_x_swap_check
+LDA ball_dy
+CMP #1
+BEQ ball_dy_positive
+LDA #1
+STA ball_dy
+JMP balla_x_swap_check
+ball_dy_positive:
+LDA #$FF
+STA ball_dy
+
+balla_x_swap_check:
+LDA collision_flags
+AND #%00100000
+CMP #0
+BEQ balla_y_swap_check
+LDA balla_dx
+CMP #1
+BEQ balla_dx_positive
+LDA #1
+STA balla_dx
+JMP balla_y_swap_check
+balla_dx_positive:
+LDA #$FF
+STA balla_dx
+
+balla_y_swap_check:
+LDA collision_flags
+AND #%00010000
+CMP #0
+BEQ ballb_x_swap_check
+LDA balla_dy
+CMP #1
+BEQ balla_dy_positive
+LDA #1
+STA balla_dy
+JMP ballb_x_swap_check
+balla_dy_positive:
+LDA #$FF
+STA balla_dy
+
+ballb_x_swap_check:
+LDA collision_flags
+AND #%00001000
+CMP #0
+BEQ ballb_y_swap_check
+LDA ballb_dx
+CMP #1
+BEQ ballb_dx_positive
+LDA #1
+STA ballb_dx
+JMP ballb_y_swap_check
+ballb_dx_positive:
+LDA #$FF
+STA ballb_dx
+
+ballb_y_swap_check:
+LDA collision_flags
+AND #%00000100
+CMP #0
+BEQ ballc_x_swap_check
+LDA ballb_dy
+CMP #1
+BEQ ballb_dy_positive
+LDA #1
+STA ballb_dy
+JMP ballc_x_swap_check
+ballb_dy_positive:
+LDA #$FF
+STA ballb_dy
+
+ballc_x_swap_check:
+LDA collision_flags
+AND #%00000010
+CMP #0
+BEQ ballc_y_swap_check
+LDA ballc_dx
+CMP #1
+BEQ ballc_dx_positive
+LDA #1
+STA ballc_dx
+JMP ballc_y_swap_check
+ballc_dx_positive:
+LDA #$FF
+STA ballc_dx
+
+ballc_y_swap_check:
+LDA collision_flags
+AND #%00000001
+CMP #0
+BEQ collision_finished
+LDA ballc_dy
+CMP #1
+BEQ ballc_dy_positive
+LDA #1
+STA ballc_dy
+JMP collision_finished
+ballc_dy_positive:
+LDA #$FF
+STA ballc_dy
+collision_finished:
+
+RTS
+.endproc
+
 .proc init_sprites
 
 LDX#0
@@ -247,60 +726,54 @@ INX
 CPX#4
 
   ; set sprite tiles
-  LDA #1
-  STA SPRITE_0_ADDR + SPRITE_OFFSET_TILE
-  LDA #2
-  STA SPRITE_1_ADDR + SPRITE_OFFSET_TILE
-  LDA #3
-  STA SPRITE_2_ADDR + SPRITE_OFFSET_TILE
-  LDA #4
-  STA SPRITE_3_ADDR + SPRITE_OFFSET_TILE
+  ;LDA #1
+  ;STA SPRITE_0_ADDR + SPRITE_OFFSET_TILE
+  ;LDA #2
+  ;STA SPRITE_1_ADDR + SPRITE_OFFSET_TILE
+  ;LDA #3
+  ;STA SPRITE_2_ADDR + SPRITE_OFFSET_TILE
+  ;LDA #4
+  ;STA SPRITE_3_ADDR + SPRITE_OFFSET_TILE
 
   LDA #190
   STA player_y
 
   LDA #128
   STA player_x
-  LDA #127
-  STA ball_x
-  LDA #54
-  STA ball_y
-  LDA #210
-  STA balla_x
-  LDA #89
-  STA balla_y
-  LDA #17
-  STA ballb_x
-  LDA #205
-  STA ballb_y
-  LDA #33
-  STA ballc_x
-  LDA #168
-  STA ballc_y
 
   LDA #1
-  STA ball_dx
-  STA ball_dy
-  STA balla_dx
-  STA balla_dy
-  STA ballb_dx
-  STA ballb_dy
-  STA ballc_dx
-  STA ballc_dy
+  STA ball_x
+  LDA #5
+  STA ball_y
+  LDA #10
+  STA balla_x
+  LDA #254
+  STA balla_y
+  LDA #249
+  STA ballb_x
+  LDA #244
+  STA ballb_y
+  LDA #239
+  STA ballc_x
+  LDA #20
+  STA ballc_y
+
+LDA #1
+STA ball_dx
+STA ball_dy
+STA balla_dx
+STA balla_dy
+STA ballb_dx
+STA ballb_dy
+STA ballc_dx
+STA ballc_dy
 
   RTS
-
-
 
 ;LDA #128
 ;STA ball_x
 ;LDA #100
 ;STA ball_y
-
-;LDA #1
-;STA ball_dx
-;LDA #1
-;STA ball_dy
 
 .endproc
 
@@ -336,7 +809,7 @@ CPX#4
  		lda #$FF ; reverse direction (-1)
  		sta ball_dx
  NOT_HITRIGHT:
- ; now move our ball
+; now move our ball
  	lda balla_y; get the current Y
 	clc
 	adc balla_dy ; add the Y velocity
@@ -445,21 +918,21 @@ CPX#4
 
 .proc update_sprites
   ; Update OAM values
-  LDA player_x
-  STA SPRITE_0_ADDR + SPRITE_OFFSET_X
-  STA SPRITE_2_ADDR + SPRITE_OFFSET_X
-  CLC
-  ADC #8
-  STA SPRITE_1_ADDR + SPRITE_OFFSET_X
-  STA SPRITE_3_ADDR + SPRITE_OFFSET_X
+  ;LDA player_x
+  ;STA SPRITE_0_ADDR + SPRITE_OFFSET_X
+  ;STA SPRITE_2_ADDR + SPRITE_OFFSET_X
+  ;CLC
+  ;ADC #8
+  ;STA SPRITE_1_ADDR + SPRITE_OFFSET_X
+  ;STA SPRITE_3_ADDR + SPRITE_OFFSET_X
 
-  LDA player_y
-  STA SPRITE_0_ADDR + SPRITE_OFFSET_Y
-  STA SPRITE_1_ADDR + SPRITE_OFFSET_Y
-  CLC
-  ADC #8
-  STA SPRITE_2_ADDR + SPRITE_OFFSET_Y
-  STA SPRITE_3_ADDR + SPRITE_OFFSET_Y
+  ;LDA player_y
+  ;STA SPRITE_0_ADDR + SPRITE_OFFSET_Y
+  ;STA SPRITE_1_ADDR + SPRITE_OFFSET_Y
+  ;CLC
+  ;ADC #8
+  ;STA SPRITE_2_ADDR + SPRITE_OFFSET_Y
+  ;STA SPRITE_3_ADDR + SPRITE_OFFSET_Y
 
 ; BALL SPRITE POSITIONING
 LDA ball_y
@@ -579,6 +1052,7 @@ forever:
     ; Read controller
     JSR read_controller
     JSR update_player
+    JSR run_collision
     JSR update_ball
     ; Update sprite data (DMA transfer to PPU OAM)
     JSR update_sprites

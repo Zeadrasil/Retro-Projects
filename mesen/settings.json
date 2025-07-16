@@ -9371,7 +9371,242 @@
       "WindowIsMaximized": false
     },
     "Debugger": {
-      "SavedDockLayout": null,
+      "SavedDockLayout": {
+        "Type": "Root",
+        "Proportion": 0,
+        "Orientation": "Horizontal",
+        "Name": "",
+        "ToolTypeName": "",
+        "SelectedIndex": 0,
+        "Children": [
+          {
+            "Type": "ProportionalDock",
+            "Proportion": 0,
+            "Orientation": "Vertical",
+            "Name": "",
+            "ToolTypeName": "",
+            "SelectedIndex": 0,
+            "Children": [
+              {
+                "Type": "ProportionalDock",
+                "Proportion": 0.75,
+                "Orientation": "Horizontal",
+                "Name": "",
+                "ToolTypeName": "",
+                "SelectedIndex": 0,
+                "Children": [
+                  {
+                    "Type": "ToolDock",
+                    "Proportion": 0.6,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": [
+                      {
+                        "Type": "Tool",
+                        "Proportion": 0,
+                        "Orientation": "Horizontal",
+                        "Name": "Disassembly",
+                        "ToolTypeName": "DisassemblyViewModel",
+                        "SelectedIndex": 0,
+                        "Children": null
+                      }
+                    ]
+                  },
+                  {
+                    "Type": "Splitter",
+                    "Proportion": 0,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": null
+                  },
+                  {
+                    "Type": "ProportionalDock",
+                    "Proportion": 0.4,
+                    "Orientation": "Vertical",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": [
+                      {
+                        "Type": "ToolDock",
+                        "Proportion": 0.5,
+                        "Orientation": "Horizontal",
+                        "Name": "",
+                        "ToolTypeName": "",
+                        "SelectedIndex": 0,
+                        "Children": [
+                          {
+                            "Type": "Tool",
+                            "Proportion": 0,
+                            "Orientation": "Horizontal",
+                            "Name": "Status",
+                            "ToolTypeName": "BaseConsoleStatusViewModel",
+                            "SelectedIndex": 0,
+                            "Children": null
+                          }
+                        ]
+                      },
+                      {
+                        "Type": "Splitter",
+                        "Proportion": 0,
+                        "Orientation": "Horizontal",
+                        "Name": "",
+                        "ToolTypeName": "",
+                        "SelectedIndex": 0,
+                        "Children": null
+                      },
+                      {
+                        "Type": "ToolDock",
+                        "Proportion": 0.5,
+                        "Orientation": "Horizontal",
+                        "Name": "",
+                        "ToolTypeName": "",
+                        "SelectedIndex": 0,
+                        "Children": [
+                          {
+                            "Type": "Tool",
+                            "Proportion": 0,
+                            "Orientation": "Horizontal",
+                            "Name": "Labels",
+                            "ToolTypeName": "LabelListViewModel",
+                            "SelectedIndex": 0,
+                            "Children": null
+                          },
+                          {
+                            "Type": "Tool",
+                            "Proportion": 0,
+                            "Orientation": "Horizontal",
+                            "Name": "Functions",
+                            "ToolTypeName": "FunctionListViewModel",
+                            "SelectedIndex": 0,
+                            "Children": null
+                          },
+                          {
+                            "Type": "Tool",
+                            "Proportion": 0,
+                            "Orientation": "Horizontal",
+                            "Name": "Find Results",
+                            "ToolTypeName": "FindResultListViewModel",
+                            "SelectedIndex": 0,
+                            "Children": null
+                          },
+                          {
+                            "Type": "Tool",
+                            "Proportion": 0,
+                            "Orientation": "Horizontal",
+                            "Name": "Controllers",
+                            "ToolTypeName": "ControllerListViewModel",
+                            "SelectedIndex": 0,
+                            "Children": null
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Type": "Splitter",
+                "Proportion": 0,
+                "Orientation": "Horizontal",
+                "Name": "",
+                "ToolTypeName": "",
+                "SelectedIndex": 0,
+                "Children": null
+              },
+              {
+                "Type": "ProportionalDock",
+                "Proportion": 0.25,
+                "Orientation": "Horizontal",
+                "Name": "",
+                "ToolTypeName": "",
+                "SelectedIndex": 0,
+                "Children": [
+                  {
+                    "Type": "ToolDock",
+                    "Proportion": 0.33333333333333337,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": [
+                      {
+                        "Type": "Tool",
+                        "Proportion": 0,
+                        "Orientation": "Horizontal",
+                        "Name": "Watch",
+                        "ToolTypeName": "WatchListViewModel",
+                        "SelectedIndex": 0,
+                        "Children": null
+                      }
+                    ]
+                  },
+                  {
+                    "Type": "Splitter",
+                    "Proportion": 0,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": null
+                  },
+                  {
+                    "Type": "ToolDock",
+                    "Proportion": 0.33333333333333337,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": [
+                      {
+                        "Type": "Tool",
+                        "Proportion": 0,
+                        "Orientation": "Horizontal",
+                        "Name": "Breakpoints",
+                        "ToolTypeName": "BreakpointListViewModel",
+                        "SelectedIndex": 0,
+                        "Children": null
+                      }
+                    ]
+                  },
+                  {
+                    "Type": "Splitter",
+                    "Proportion": 0,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": null
+                  },
+                  {
+                    "Type": "ToolDock",
+                    "Proportion": 0.33333333333333337,
+                    "Orientation": "Horizontal",
+                    "Name": "",
+                    "ToolTypeName": "",
+                    "SelectedIndex": 0,
+                    "Children": [
+                      {
+                        "Type": "Tool",
+                        "Proportion": 0,
+                        "Orientation": "Horizontal",
+                        "Name": "Call Stack",
+                        "ToolTypeName": "CallStackViewModel",
+                        "SelectedIndex": 0,
+                        "Children": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
       "ShowSettingsPanel": true,
       "ShowByteCode": false,
       "ShowMemoryValues": true,
@@ -9468,19 +9703,37 @@
       "ForbidBreakpointColor": 4285756275,
       "CodeActiveStatementColor": 4294967040,
       "CodeActiveMidInstructionColor": 4294958120,
-      "LabelListColumnWidths": [],
+      "LabelListColumnWidths": [
+        100,
+        80,
+        80,
+        100
+      ],
       "FunctionListColumnWidths": [],
-      "BreakpointListColumnWidths": [],
-      "WatchListColumnWidths": [],
-      "CallStackColumnWidths": [],
+      "BreakpointListColumnWidths": [
+        22,
+        22,
+        65,
+        65,
+        150
+      ],
+      "WatchListColumnWidths": [
+        200,
+        100
+      ],
+      "CallStackColumnWidths": [
+        100,
+        90,
+        90
+      ],
       "FindResultColumnWidths": [],
       "WindowSize": {
-        "Width": 0,
-        "Height": 0
+        "Width": 800,
+        "Height": 500
       },
       "WindowLocation": {
-        "X": 0,
-        "Y": 0
+        "X": 1252,
+        "Y": 455
       },
       "WindowIsMaximized": false
     },
@@ -9746,7 +9999,7 @@
     "Items": [
       {
         "RomFile": {
-          "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/pong.nes",
+          "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/game-alt.nes",
           "InnerFile": "",
           "InnerFileIndex": 0
         },
@@ -9755,6 +10008,14 @@
       {
         "RomFile": {
           "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/game.nes",
+          "InnerFile": "",
+          "InnerFileIndex": 0
+        },
+        "PatchFile": null
+      },
+      {
+        "RomFile": {
+          "Path": "C:\\Users\\dgriffith\\Documents\\Dev\\Retro\\Projects\\src/pong.nes",
           "InnerFile": "",
           "InnerFileIndex": 0
         },
@@ -9868,8 +10129,8 @@
       "Height": 505
     },
     "WindowLocation": {
-      "X": 760,
-      "Y": 435
+      "X": 414,
+      "Y": 403
     },
     "WindowIsMaximized": false
   },
